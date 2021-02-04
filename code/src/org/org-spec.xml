@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="http://moise.sourceforge.net/xml/os.xsl" type="text/xsl" ?>
+
+<organisational-specification
+    id="org_spec"
+    os-version="0.8"
+    xmlns='http://moise.sourceforge.net/os'
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:schemaLocation='http://moise.sourceforge.net/os
+                        http://moise.sourceforge.net/xml/os.xsd'>
+	
+	<structural-specification>	
+		<role-definitions>
+		    <role id="manager"/>
+		    <role id="coordinator"/>
+		    <role id="volunteer"/>
+		    <role id="operator">
+	           <extends role="volunteer"/>
+	        </role>
+		</role-definitions>
+		
+		<group-specification id="onp_group">
+		    <roles>
+		        <role id="manager"     min="1" max="1"/> 
+		        <role id="coordinator" min="0" max="1"/>
+	            <role id="operator"/> <!-- the cardinality default value: min = 0, max = ‘unlimited’ --> 
+		    </roles>
+		</group-specification>
+	</structural-specification>
+	
+	<functional-specification>
+	    <scheme id="main_scheme">
+	        <goal id="help_people">
+	            <plan operator="sequence">
+	                <goal id="init" ds="create artifacts for the simulation"/>
+	                <goal id="hire_staff"/>
+	                <goal id="raise_fund">
+	                    <plan operator="sequence">
+	                        <goal id="create_project" type="maintenance"/>
+	                    </plan>
+	                </goal>
+	            </plan>
+	        </goal>
+	        
+	        <mission id="management" min="1" max="1">
+	            <goal id="help_people"/>
+	            <goal id="init"/>
+	            <goal id="hire_staff"/>
+	            <goal id="raise_fund"/>
+	            <goal id="create_project"/>
+	        </mission>
+	    </scheme>
+	    
+	    <scheme id="project_scheme">
+	        <goal id="fund_project">
+	            <argument id="project_art"/>
+	            <plan operator="sequence">
+	                <goal id="coordination">
+	                    <plan operator="sequence">
+	                        <goal id="assignment"/>
+	                        <goal id="recruitment"/>
+	                    </plan>
+	                </goal>
+	                
+	                <goal id="awareness"/>
+	                
+	                <goal id="complete_project">
+	                    <plan operator="parallel">
+	                        <goal id="execute_task">
+	                            <plan operator="choice">
+	                                <goal id="transfer_fund"/>
+	                                <goal id="assistance"/>
+	                            </plan>
+	                        </goal>
+	                    </plan>
+	                </goal>
+	            </plan>
+	        </goal>
+	        
+	        <mission id="mCoord" min="1" max="1">
+	            <goal id="assignment"/>
+	            <goal id="recruitment"/>
+	            <goal id="coordination"/>
+	        </mission>
+	        
+	        <mission id="mAware" min="0">
+	            <goal id="awareness"/>
+	        </mission>
+	        
+	        <mission id="mFund" min="1" max="1">
+	            <goal id="fund_project"/>
+	            <goal id="transfer_fund"/>
+	            <goal id="execute_task"/>
+	            <goal id="complete_project"/>
+	        </mission>
+	        
+	        <mission id="mTask">
+	            <goal id="assistance"/>
+	        </mission>
+	    </scheme>
+	</functional-specification>
+	
+	<normative-specification>
+	    <norm id="n1" type="obligation" role="manager" mission="management"/>
+	    <norm id="n2" type="obligation" role="coordinator" mission="mCoord"/>
+	    <norm id="n3" type="permission" role="operator" mission="mAware"/>
+	    <norm id="n4" type="obligation" role="manager" mission="mFund" />
+	    <norm id="n5" type="obligation" role="operator" mission="mTask" />
+	</normative-specification>
+</organisational-specification>
